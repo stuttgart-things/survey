@@ -1,0 +1,44 @@
+---
+survey_questions:
+  - prompt: "What is your name?"
+    name: "username"
+    kind: "ask"
+    type: "string"
+    minLength: 2
+    maxLength: 30
+
+  - prompt: "What is your favorite color?"
+    name: "favorite_color"
+    kind: "select"
+    options: ["Red", "Blue", "Green", "Yellow"]
+    default: "Blue"
+
+  - prompt: "How old are you?"
+    name: "age"
+    kind: "ask"
+    type: "int"
+    default: "25"
+    minLength: 2
+    maxLength: 30
+
+  - prompt: "Do you like coffee?"
+    name: "likes_coffee"
+    kind: "select"
+    options: ["Yes", "No"]
+    type: "boolean"
+    default: "Yes"
+
+  - prompt: "Select your preferred programming language"
+    name: "programming_language"
+    kind: "select"
+    options: ["Go", "Python", "JavaScript", "Rust"]
+    default: "Go"
+
+  - prompt: "What is your favorite drink?"
+    name: "favorite_drink"
+    kind: "function"
+    default_function: "getDefaultDrink"
+    default_params:
+      temperature: "cold"
+    minLength: 2
+    maxLength: 30
