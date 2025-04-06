@@ -37,7 +37,7 @@ survey_questions:
   - prompt: "What is your favorite drink?"
     name: "favorite_drink"
     kind: "function"
-    default_function: "getDefaultDrink"
+    #default_function: "getDefaultDrink"
     default_params:
       temperature: "cold"
     minLength: 2
