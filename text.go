@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// INITIALMODEL INITIALIZES THE MODEL WITH EITHER PROVIDED CONTENT OR A FILE.
-func InitialModel(content string) model {
+// INITIALText INITIALIZES THE Text WITH EITHER PROVIDED CONTENT OR A FILE.
+func InitialModel(content string) Text {
 	ta := textarea.New()
 	ta.SetValue(content)
 	ta.Focus()
@@ -21,63 +21,63 @@ func InitialModel(content string) model {
 	ta.CharLimit = 0
 	ta.Prompt = "│ "
 
-	return model{
-		textarea: ta,
+	return Text{
+		Textarea: ta,
 	}
 }
 
 // INIT INITIALIZES THE EDITOR WITH BLINKING CURSOR BEHAVIOR.
-func (m model) Init() tea.Cmd {
+func (m Text) Init() tea.Cmd {
 	return textarea.Blink
 }
 
 // UPDATE HANDLES USER INPUT AND UPDATES THE EDITOR STATE.
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+s":
-			if err := validateYAML(m.textarea.Value()); err != nil {
-				m.errMsg = "YAML Error: " + err.Error()
+			if err := validateYAML(m.Textarea.Value()); err != nil {
+				m.ErrMsg = "YAML Error: " + err.Error()
 			} else {
-				m.quitting = true
+				m.Quitting = true
 				return m, tea.Quit
 			}
 		case "esc":
-			m.quitting = true
+			m.Quitting = true
 			return m, tea.Quit
 		case "ctrl+n":
 			// Add a newline at the end (quick add)
-			m.textarea.SetValue(m.textarea.Value() + "\n")
+			m.Textarea.SetValue(m.Textarea.Value() + "\n")
 		}
 	}
 
 	var cmd tea.Cmd
-	m.textarea, cmd = m.textarea.Update(msg)
+	m.Textarea, cmd = m.Textarea.Update(msg)
 	return m, cmd
 }
 
 // VIEW RETURNS THE CURRENT VIEW FOR RENDERING THE EDITOR IN THE TERMINAL.
-func (m model) View() string {
-	if m.quitting {
+func (m Text) View() string {
+	if m.Quitting {
 		return ""
 	}
 
 	errorMsg := ""
-	if m.errMsg != "" {
-		errorMsg = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Render(m.errMsg) + "\n"
+	if m.ErrMsg != "" {
+		errorMsg = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Render(m.ErrMsg) + "\n"
 	}
 
 	info := lipgloss.NewStyle().Faint(true).Render(fmt.Sprintf(
 		"Lines: %d | Chars: %d | Ctrl+S: Save • Ctrl+N: New Line • Esc: Quit",
-		len(strings.Split(m.textarea.Value(), "\n")),
-		len(m.textarea.Value()),
+		len(strings.Split(m.Textarea.Value(), "\n")),
+		len(m.Textarea.Value()),
 	))
 
 	return fmt.Sprintf(
 		"%s\n%s\n\n%s",
 		lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Render("Edit YAML:"),
-		m.textarea.View(),
+		m.Textarea.View(),
 		errorMsg+info,
 	)
 }

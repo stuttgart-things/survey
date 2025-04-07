@@ -1,6 +1,10 @@
 package survey
 
-import "github.com/charmbracelet/bubbles/textarea"
+import (
+	"github.com/charmbracelet/bubbles/filepicker"
+	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/bubbles/textinput"
+)
 
 // FUNCTION MAPPING
 var defaultFunctions = map[string]func(params map[string]interface{}) string{}
@@ -20,8 +24,20 @@ type Question struct {
 }
 
 // MODEL HOLDS THE STATE FOR THE TERMINAL UI.
-type model struct {
-	textarea textarea.Model
-	errMsg   string
-	quitting bool
+type Text struct {
+	Textarea textarea.Model
+	ErrMsg   string
+	Quitting bool
+}
+
+// SAVE MODEL HOLDS THE STATE FOR THE SAVE FUNCTIONALITY.
+type Save struct {
+	content     string
+	filepicker  filepicker.Model
+	filename    textinput.Model
+	selectedDir string
+	quitting    bool
+	status      string
+	saved       bool
+	err         error
 }

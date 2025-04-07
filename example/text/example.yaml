@@ -1,0 +1,11 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: homerun-feed-catcher
+  description: Homerun feed catcher
+  annotations:
+    backstage.io/source-location: url:https://whatever.com/stuttgart-things/homerun/homerun-feed-catcher
+  type: service
+  owner: development
+  lifecycle: experimental
