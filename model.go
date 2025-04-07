@@ -1,5 +1,7 @@
 package survey
 
+import "github.com/charmbracelet/bubbles/textarea"
+
 // FUNCTION MAPPING
 var defaultFunctions = map[string]func(params map[string]interface{}) string{}
 
@@ -15,4 +17,11 @@ type Question struct {
 	MinLength       int                    `yaml:"minLength,omitempty"`
 	MaxLength       int                    `yaml:"maxLength,omitempty"`
 	Type            string                 `yaml:"type,omitempty"` // Updated field to match the YAML
+}
+
+// MODEL HOLDS THE STATE FOR THE TERMINAL UI.
+type model struct {
+	textarea textarea.Model
+	errMsg   string
+	quitting bool
 }
