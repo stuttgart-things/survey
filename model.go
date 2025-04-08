@@ -1,5 +1,11 @@
 package survey
 
+import (
+	"github.com/charmbracelet/bubbles/filepicker"
+	"github.com/charmbracelet/bubbles/textarea"
+	"github.com/charmbracelet/bubbles/textinput"
+)
+
 // FUNCTION MAPPING
 var defaultFunctions = map[string]func(params map[string]interface{}) string{}
 
@@ -15,4 +21,23 @@ type Question struct {
 	MinLength       int                    `yaml:"minLength,omitempty"`
 	MaxLength       int                    `yaml:"maxLength,omitempty"`
 	Type            string                 `yaml:"type,omitempty"` // Updated field to match the YAML
+}
+
+// MODEL HOLDS THE STATE FOR THE TERMINAL UI.
+type Text struct {
+	Textarea textarea.Model
+	ErrMsg   string
+	Quitting bool
+}
+
+// SAVE MODEL HOLDS THE STATE FOR THE SAVE FUNCTIONALITY.
+type Save struct {
+	content     string
+	filepicker  filepicker.Model
+	filename    textinput.Model
+	selectedDir string
+	quitting    bool
+	status      string
+	saved       bool
+	err         error
 }

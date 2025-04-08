@@ -44,8 +44,6 @@ tasks:
 
   commit:
     desc: Commit + push code into branch
-    deps:
-      - check
     cmds:
       - git branch --set-upstream-to=origin/{{ .BRANCH }}
       - git pull
