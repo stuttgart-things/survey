@@ -11,29 +11,55 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// INITIALText INITIALIZES THE Text WITH EITHER PROVIDED CONTENT OR A FILE.
 func InitialModel(content string) Text {
 	ta := textarea.New()
 	ta.SetValue(content)
 	ta.Focus()
-	ta.SetWidth(120)
+
+	// Set reasonable defaults for a scrollable editor
 	ta.ShowLineNumbers = true
 	ta.CharLimit = 0
 	ta.Prompt = "│ "
+	ta.SetHeight(100) // Fixed visible lines, content will scroll
+
+	// Optimized styling for better visibility
+	ta.FocusedStyle.Base = lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.Color("62")).
+		Padding(0, 1)
+
+	ta.FocusedStyle.CursorLine = lipgloss.NewStyle().
+		Background(lipgloss.Color("236"))
+
+	ta.FocusedStyle.LineNumber = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240"))
 
 	return Text{
 		Textarea: ta,
 	}
 }
 
-// INIT INITIALIZES THE EDITOR WITH BLINKING CURSOR BEHAVIOR.
 func (m Text) Init() tea.Cmd {
-	return textarea.Blink
+	return tea.Batch(
+		textarea.Blink,
+		tea.EnterAltScreen,
+	)
 }
 
-// UPDATE HANDLES USER INPUT AND UPDATES THE EDITOR STATE.
 func (m Text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.WindowSize = msg
+		// Leave some space for header/footer
+		height := msg.Height - 3
+		if height < 3 {
+			height = 3 // Minimum reasonable height
+		}
+		m.Textarea.SetWidth(msg.Width - 4)
+		m.Textarea.SetHeight(20)
+
+		return m, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+s":
@@ -44,10 +70,13 @@ func (m Text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, tea.Quit
 			}
 		case "esc":
-			m.Quitting = true
-			return m, tea.Quit
+			if m.ErrMsg != "" {
+				m.ErrMsg = ""
+			} else {
+				m.Quitting = true
+				return m, tea.Quit
+			}
 		case "ctrl+n":
-			// Add a newline at the end (quick add)
 			m.Textarea.SetValue(m.Textarea.Value() + "\n")
 		}
 	}
@@ -57,32 +86,41 @@ func (m Text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-// VIEW RETURNS THE CURRENT VIEW FOR RENDERING THE EDITOR IN THE TERMINAL.
 func (m Text) View() string {
 	if m.Quitting {
 		return ""
 	}
 
+	// Header with line count info
+	totalLines := len(strings.Split(m.Textarea.Value(), "\n"))
+	header := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("212")).
+		Bold(true).
+		Render(fmt.Sprintf("YAML Editor (Lines: %d)", totalLines))
+
+	// Error message
 	errorMsg := ""
 	if m.ErrMsg != "" {
-		errorMsg = lipgloss.NewStyle().Foreground(lipgloss.Color("196")).Render(m.ErrMsg) + "\n"
+		errorMsg = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("196")).
+			Render("Error: "+m.ErrMsg) + "\n"
 	}
 
-	info := lipgloss.NewStyle().Faint(true).Render(fmt.Sprintf(
-		"Lines: %d | Chars: %d | Ctrl+S: Save • Ctrl+N: New Line • Esc: Quit",
-		len(strings.Split(m.Textarea.Value(), "\n")),
-		len(m.Textarea.Value()),
-	))
+	// Footer with key bindings
+	footer := lipgloss.NewStyle().
+		Faint(true).
+		Render("↑↓: Scroll • ^S: Save • ^N: New Line • Esc: Quit")
 
-	return fmt.Sprintf(
-		"%s\n%s\n\n%s",
-		lipgloss.NewStyle().Foreground(lipgloss.Color("212")).Render("Edit YAML:"),
+	// Combine all components
+	return lipgloss.JoinVertical(
+		lipgloss.Left,
+		header,
 		m.Textarea.View(),
-		errorMsg+info,
+		errorMsg,
+		footer,
 	)
 }
 
-// READYAMLFILE READS A YAML FILE FROM THE FILESYSTEM AND RETURNS ITS CONTENT.
 func ReadYAMLFile(filePath string) (string, error) {
 	content, err := os.ReadFile(filePath)
 	if err != nil {
@@ -91,7 +129,6 @@ func ReadYAMLFile(filePath string) (string, error) {
 	return string(content), nil
 }
 
-// VALIDATEYAML CHECKS IF THE INPUT CONTENT IS VALID YAML.
 func validateYAML(content string) error {
 	var dummy interface{}
 	return yaml.Unmarshal([]byte(content), &dummy)

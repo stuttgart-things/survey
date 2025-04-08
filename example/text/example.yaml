@@ -9,3 +9,11 @@ metadata:
   type: service
   owner: development
   lifecycle: experimental
+  type: service
+  owner: development
+  lifecycle: experimental
+  type: service
+  age: 17
+  this: experimental
+  typthate: service
+  that: 17

@@ -4,6 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/filepicker"
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 // FUNCTION MAPPING
@@ -25,9 +26,10 @@ type Question struct {
 
 // MODEL HOLDS THE STATE FOR THE TERMINAL UI.
 type Text struct {
-	Textarea textarea.Model
-	ErrMsg   string
-	Quitting bool
+	Textarea   textarea.Model
+	ErrMsg     string
+	Quitting   bool
+	WindowSize tea.WindowSizeMsg // Track window size for responsive layout
 }
 
 // SAVE MODEL HOLDS THE STATE FOR THE SAVE FUNCTIONALITY.
