@@ -5,10 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/textarea"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	"gopkg.in/yaml.v2"
+	"github.com/charmbracelet/bubbles/v2/textarea"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	lipgloss "github.com/charmbracelet/lipgloss/v2"
+	"gopkg.in/yaml.v3"
 )
 
 func InitialModel(content string) Text {
@@ -23,15 +23,15 @@ func InitialModel(content string) Text {
 	ta.SetHeight(100) // Fixed visible lines, content will scroll
 
 	// Optimized styling for better visibility
-	ta.FocusedStyle.Base = lipgloss.NewStyle().
+	ta.Styles.Blurred.Base = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(lipgloss.Color("62")).
 		Padding(0, 1)
 
-	ta.FocusedStyle.CursorLine = lipgloss.NewStyle().
+	ta.Styles.Blurred.CursorLine = lipgloss.NewStyle().
 		Background(lipgloss.Color("236"))
 
-	ta.FocusedStyle.LineNumber = lipgloss.NewStyle().
+	ta.Styles.Blurred.LineNumber = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("240"))
 
 	return Text{

@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
 
-	"github.com/charmbracelet/bubbles/filepicker"
-	"github.com/charmbracelet/bubbles/textinput"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/v2/filepicker"
+	"github.com/charmbracelet/bubbles/v2/textinput"
+	lipgloss "github.com/charmbracelet/lipgloss/v2"
 )
 
 // InitialSaveModel initializes the Save model with a file picker and text input for the filename.
@@ -24,7 +24,7 @@ func InitialSaveModel(content string) Save {
 	ti.Placeholder = "filename.txt"
 	ti.Focus()
 	ti.CharLimit = 256
-	ti.Width = 50
+	// ti.Width() = 50
 
 	return Save{
 		content:    content,
@@ -49,8 +49,8 @@ func (m Save) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC, tea.KeyEsc:
+		switch msg.Key().Code {
+		case tea.KeyRightCtrl, tea.KeyEsc:
 			m.quitting = true
 			return m, tea.Quit
 
