@@ -7,7 +7,16 @@ import (
 	"time"
 
 	"github.com/charmbracelet/huh"
+	log "github.com/sirupsen/logrus"
 )
+
+// DefaultFunctions holds the registered functions
+var DefaultFunctions = make(map[string]func(params map[string]interface{}) string)
+
+// RegisterFunction adds a function to the registry
+func RegisterFunction(name string, fn func(params map[string]interface{}) string) {
+	DefaultFunctions[name] = fn
+}
 
 // BUILD THE SURVEY FUNCTION WITH THE NEW RANDOM SETUP
 func BuildSurvey(
@@ -33,7 +42,7 @@ func BuildSurvey(
 		switch question.Kind {
 		case "function": // Handle "function" kind
 			if question.DefaultFunction != "" {
-				if fn, ok := defaultFunctions[question.DefaultFunction]; ok {
+				if fn, ok := DefaultFunctions[question.DefaultFunction]; ok {
 					question.Default = fn(question.DefaultParams)
 				} else {
 					return nil, nil, fmt.Errorf("DEFAULT FUNCTION %s NOT FOUND", question.DefaultFunction)
@@ -105,4 +114,50 @@ func BuildSurvey(
 
 	// Create and return the form along with the answers map
 	return huh.NewForm(groupFields...), answers, nil
+}
+
+// RunSurveyWithRandomSelects runs the survey but generates random answers for select questions if runSurvey is false
+func RunSurveyWithRandomSelects(profilePath, surveyKey string, runSurvey bool) map[string]interface{} {
+	surveyValues := make(map[string]interface{})
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	// READ PROFILE AND SURVEY BY KEY
+	survey, _ := LoadQuestionFile(profilePath, surveyKey)
+
+	// IF SURVEY EXISTS, RUN IT
+	if len(survey) > 0 {
+		if !runSurvey {
+			// Generate random answers for select questions
+			for _, question := range survey {
+				if question.Kind == "select" && len(question.Options) > 0 {
+					randomIndex := r.Intn(len(question.Options))
+					question.Default = question.Options[randomIndex]
+				}
+				surveyValues[question.Name] = question.Default
+			}
+			return surveyValues
+		}
+
+		surveyQuestions, _, err := BuildSurvey(survey)
+		if err != nil {
+			log.Fatalf("ERROR BUILDING SURVEY: %v", err)
+		}
+		log.Info("SURVEY FOUND")
+
+		// RUN THE INTERACTIVE SURVEY
+		err = surveyQuestions.Run()
+		if err != nil {
+			log.Fatalf("ERROR RUNNING SURVEY: %v", err)
+		}
+
+		// SET ANWERS TO ALL VALUES
+		for _, question := range survey {
+			surveyValues[question.Name] = question.Default
+		}
+
+	} else {
+		log.Info("NO SURVEY FOUND")
+	}
+
+	return surveyValues
 }

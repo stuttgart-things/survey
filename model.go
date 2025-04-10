@@ -7,9 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
-// FUNCTION MAPPING
-var defaultFunctions = map[string]func(params map[string]interface{}) string{}
-
 // QUESTION STRUCT TO HOLD THE QUESTION DATA FROM YAML
 type Question struct {
 	Prompt          string                 `yaml:"prompt"`
