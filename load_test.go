@@ -26,8 +26,10 @@ survey_questions:
 
 func TestLoadQuestionFile(t *testing.T) {
 	filename := createTempYAMLFile(t, sampleYAML)
-	defer os.Remove(filename)
-
+	defer func() {
+		err := os.Remove(filename)
+		assert.NoError(t, err)
+	}()
 	questions, err := LoadQuestionFile(filename, "survey_questions")
 	assert.NoError(t, err)
 	assert.NotEmpty(t, questions)
