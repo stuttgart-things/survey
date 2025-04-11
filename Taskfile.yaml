@@ -9,6 +9,15 @@ vars:
   BRANCH:
     sh: if [ $(git rev-parse --abbrev-ref HEAD) != "main" ]; then echo $(git rev-parse --abbrev-ref HEAD); else echo main ; fi
 
+# PRECONDITION TO CHECK IF TOKENS SET OR UNSET FOR RELEASE
+release-preconditions: &release
+  - sh: "[[ -n \"${GITHUB_TOKEN}\" ]]"
+    msg: "Error: GITHUB_TOKEN is not set. Please set the environment variable and try again."
+  - sh: "[[ -z \"${GITLAB_TOKEN}\" ]]"
+    msg: "Error: GITLAB_TOKEN is set. Please unset the environment variable and try again."
+  - sh: "[[ $(git rev-parse --abbrev-ref HEAD) != 'main' ]]"
+    msg: "Error: You are on the 'main' branch. Please switch to a different branch and try again."
+
 tasks:
   do:
     desc: Select a task to run
@@ -16,6 +25,22 @@ tasks:
       - |
         task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
         task ${task}
+
+  release:
+    desc: Release
+    preconditions: *release
+    # deps:
+    #   - run
+    cmds:
+      - task: commit
+      #- sleep 20s
+      # - |
+      #   RUN_ID=$(gh run list | grep {{ .BRANCH }} | head -1 | awk '{for (i=1; i<=NF; i++) if ($i ~ /^[0-9]+$/) print $i}')
+      #   gh run watch ${RUN_ID} --exit-status
+      - task: pr
+      - npx semantic-release --dry-run
+      - npx semantic-release --debug --no-ci
+      - task: goreleaser
 
   branch:
     desc: Create branch from main
@@ -39,7 +64,7 @@ tasks:
       #- unset GITHUB_TOKEN &&   gh auth login --hostname GitHub.com -p https --web
       - gh pr create -t "{{ .BRANCH }}" -b "{{ .BRANCH }} branch into main"
       - sleep 20s
-      - gh pr checks $(gh pr list | grep "^[^#;]" | grep '{{ .BRANCH }}' | awk '{print $1}') --watch
+      #- gh pr checks $(gh pr list | grep "^[^#;]" | grep '{{ .BRANCH }}' | awk '{print $1}') --watch
       - gh pr merge $(gh pr list | grep "^[^#;]" | grep '{{ .BRANCH }}' | awk '{print $1}') --auto --rebase --delete-branch
 
   commit:
@@ -68,3 +93,10 @@ tasks:
           echo "No changes to commit."
         fi
       - git push origin -u {{ .BRANCH }}
+
+  do:
+    desc: Select a task to run
+    cmds:
+      - |
+        task=$(yq e '.tasks | keys' Taskfile.yaml | sed 's/^- //' | gum choose)
+        task ${task}
