@@ -51,10 +51,7 @@ func (m Text) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.WindowSize = msg
 		// Leave some space for header/footer
-		height := msg.Height - 3
-		if height < 3 {
-			height = 3 // Minimum reasonable height
-		}
+
 		m.Textarea.SetWidth(msg.Width - 4)
 		m.Textarea.SetHeight(20)
 

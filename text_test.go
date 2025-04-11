@@ -8,21 +8,28 @@ import (
 )
 
 func TestReadYAMLFile(t *testing.T) {
-	// Setup - create a temporary YAML file
 	content := `key: value
 list:
   - item1
   - item2`
+
 	tmpfile, err := os.CreateTemp("", "test*.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name())
+	defer func() {
+		err := os.Remove(tmpfile.Name())
+		assert.NoError(t, err)
+	}()
 
-	if _, err := tmpfile.WriteString(content); err != nil {
+	_, err = tmpfile.WriteString(content)
+	if err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	err = tmpfile.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	tests := []struct {
 		name     string
@@ -125,19 +132,26 @@ spec:
 }
 
 func TestReadAndValidateIntegration(t *testing.T) {
-	// Setup - create valid temporary YAML file
 	validContent := `key: value
 valid: true`
+
 	tmpfile, err := os.CreateTemp("", "valid*.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile.Name())
+	defer func() {
+		err := os.Remove(tmpfile.Name())
+		assert.NoError(t, err)
+	}()
 
-	if _, err := tmpfile.WriteString(validContent); err != nil {
+	_, err = tmpfile.WriteString(validContent)
+	if err != nil {
 		t.Fatal(err)
 	}
-	tmpfile.Close()
+	err = tmpfile.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	t.Run("read and validate valid yaml", func(t *testing.T) {
 		content, err := ReadYAMLFile(tmpfile.Name())
@@ -148,18 +162,24 @@ valid: true`
 		assert.NoError(t, err)
 	})
 
-	// Setup - create invalid temporary YAML file
 	invalidContent := `key: value: wrong`
 	tmpfile2, err := os.CreateTemp("", "invalid*.yaml")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer os.Remove(tmpfile2.Name())
+	defer func() {
+		err := os.Remove(tmpfile2.Name())
+		assert.NoError(t, err)
+	}()
 
-	if _, err := tmpfile2.WriteString(invalidContent); err != nil {
+	_, err = tmpfile2.WriteString(invalidContent)
+	if err != nil {
 		t.Fatal(err)
 	}
-	tmpfile2.Close()
+	err = tmpfile2.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	t.Run("read and validate invalid yaml", func(t *testing.T) {
 		content, err := ReadYAMLFile(tmpfile2.Name())
