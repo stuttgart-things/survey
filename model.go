@@ -40,3 +40,13 @@ type Save struct {
 	saved       bool
 	err         error
 }
+
+type ListModel struct {
+	variables   []string
+	index       int
+	editing     bool
+	input       textinput.Model
+	addingNew   bool
+	shouldQuit  bool
+	FinalOutput string
+}

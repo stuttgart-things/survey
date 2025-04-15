@@ -50,7 +50,7 @@ tasks:
       - task: pr
       - npx semantic-release --dry-run
       - npx semantic-release --debug --no-ci
-      - task: goreleaser
+      #- task: goreleaser
 
   branch:
     desc: Create branch from main
