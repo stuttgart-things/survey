@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/stuttgart-things/survey/compare/v0.4.0...v0.4.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* fix/list-question ([52c770f](https://github.com/stuttgart-things/survey/commit/52c770f90119b89f071b8105d76c581e128df848))
+
 # [0.4.0](https://github.com/stuttgart-things/survey/compare/v0.3.1...v0.4.0) (2025-04-11)
 
 
