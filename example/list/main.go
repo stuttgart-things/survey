@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
-
 	"github.com/stuttgart-things/survey"
 )
 
@@ -31,8 +30,6 @@ func main() {
 	}
 
 	if model, ok := m.(survey.ListModel); ok && model.FinalOutput != "" {
-		fmt.Println("\nSaved variables:")
-		fmt.Print(model.FinalOutput)
 		output = model.FinalOutput
 	}
 
