@@ -41,4 +41,4 @@ survey_questions:
     default_params:
       temperature: "cold"
     minLength: 2
-    maxLength: 30s
+    maxLength: 30
