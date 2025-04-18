@@ -1,3 +1,10 @@
+# [0.5.0](https://github.com/stuttgart-things/survey/compare/v0.4.1...v0.5.0) (2025-04-18)
+
+
+### Features
+
+* feat/add-randon-answers ([2fd8245](https://github.com/stuttgart-things/survey/commit/2fd8245b8fa0a3cf154502e73564d24c144a7d42))
+
 ## [0.4.1](https://github.com/stuttgart-things/survey/compare/v0.4.0...v0.4.1) (2025-04-16)
 
 
