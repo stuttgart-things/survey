@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/bubbles/v2 v2.0.0-beta.1
 	github.com/charmbracelet/bubbletea/v2 v2.0.0-beta1
 	github.com/charmbracelet/huh v0.6.0
-	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta1
+	github.com/charmbracelet/lipgloss/v2 v2.0.6
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.10.0
 	gopkg.in/yaml.v2 v2.4.0
